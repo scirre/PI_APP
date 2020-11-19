@@ -1,0 +1,141 @@
+// APP PROJETO INTEGRADOR UNIVESP - POLO HELIOPOLIS - ENG. COMPUTAÇÃO
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project name="BUILD_CONTROLE" default="* DEBUG" basedir=".">
+
+	<description>
+  Sample build file for TotalCross applications.
+</description>
+
+	<!-- this target displays a help message which documents this configuration file features -->
+
+	<target name="help">
+		<echo message="Type 'ant -p' to list all available targets." />
+	</target>
+
+	<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+target: init
+
+-description:
+        setup all build process properties.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+	<target name="init">
+
+		<!-- The SDK root -->
+		<property name="sdk.root" value="C:\TotalCross3 344" />
+
+		<!-- The JDK root -->
+		<property name="jdk.root" value="C:\Sun\SDK\jdk" />
+
+		<!-- The Application name -->
+		<property name="app.name" value="CONTROLE" />
+		<property name="jar.name" value="principal.Home.jar" />
+
+		<!-- Platforms to deploy. E.G.: -palm -wince -win32
+		       Note: only -palm -iphone are supported under linux -->
+		<property name="platforms" value="-android -wince -win32 -wp8" />
+
+		<!-- The target directory where the files will be created. -->
+		<property name="target.dir" value="." />
+
+		<!-- Any extra arguments you want to pass to the deployer -->
+		<property name="extra.args" value="/p /v /n CONTROLE" />
+
+	</target>
+
+	<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+target: clean
+
+-description:
+        remove the install folder
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+	<target name="clean" depends="init" description="Remove the install folder">
+		<delete dir="${target.dir}/bin/gui/install" />
+	</target>
+
+	<!-- ================================= 
+      target: complile              
+================================= -->
+	<target name="build" depends="clean">
+		<mkdir dir="build" />
+		<javac srcdir="${target.dir}" destdir="build" target="1.1" source="1.2">
+			<include name="**/*.java" />
+			<classpath>
+				<pathelement location="${sdk.root}/dist/tc.jar" />
+				<pathelement location="${jdk.root}/tools.jar" />
+			</classpath>
+		</javac>
+		<copy todir="${target.dir}\build">
+			<fileset dir="${target.dir}">
+				<exclude name="**/*.java" />
+				<exclude name="build/" />
+				<exclude name="dist/" />
+				<exclude name="icon/" />
+				<exclude name="exec/" />
+				<exclude name="*.pdb" />
+				<exclude name="*.db" />
+				<exclude name="*.dbo" />
+				<exclude name="*.idk" />
+				<exclude name="*.idr" />
+				<exclude name="*.bmp" />
+				<exclude name="*.jpg" />
+				<exclude name="*.png" />
+				<exclude name="*.zip" />
+				<exclude name="*.gif" />
+				<exclude name="*.CAB" />
+				<exclude name="*.bat" />
+				<exclude name="*.ini" />
+
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ================================= 
+      target: make-jar              
+================================= -->
+	<target name="make-jar" depends="build">
+		<jar jarfile="Home.jar">
+			<fileset dir="${target.dir}" includes="**/*.class *.jpg **/*.png" />
+		</jar>
+	</target>
+
+	<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+target: deploy
+
+-description:
+        build a TotalCross application
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+	<target name="* DEBUG" if="app.name" depends="make-jar" description="Deploy a TotalCross application">
+		<echo message="Deploy the ${app.name}" />
+		<!-- Caminho da classe que extende a MainWindow -->
+		<java classname="tc.Deploy" fork="yes" dir="${target.dir}">
+			<classpath>
+				<pathelement location="${sdk.root}/dist/tc.jar" />
+			</classpath>
+			<arg file="Home.jar" />
+			<arg file="*.jpg" />
+			<arg file="*.png" />
+			<arg line="${extra.args}" />
+			<arg line="${platforms}" />
+		</java>
+	</target>
+
+	<target name="CHAVE" if="app.name" depends="make-jar" description="Deploy a TotalCross application">
+		<echo message="Deploy the ${app.name}" />
+		<!-- Caminho da classe que extende a MainWindow -->
+		<java classname="tc.Deploy" fork="yes" dir="${target.dir}">
+			<classpath>
+				<pathelement location="${sdk.root}/dist/tc.jar" />
+			</classpath>
+			<arg file="Home.jar" />
+			<arg file="*.jpg" />
+			<arg file="*.png" />
+			<arg line="${extra.args} /r 5443444B03CA07FBBE00A9AA" />
+			<arg line="${platforms}" />
+		</java>
+	</target>
+
+</project>
